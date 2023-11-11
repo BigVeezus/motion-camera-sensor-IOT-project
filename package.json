@@ -16,6 +16,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "h264-converter": "^0.1.4",
     "pi-camera": "^1.7.0",
-    "pi-gpio": "^0.0.8"
+    "pi-gpio": "^0.0.8",
+    "mongoose": "^7.2.2"
   }
 }

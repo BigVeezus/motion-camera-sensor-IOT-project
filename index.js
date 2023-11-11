@@ -2,15 +2,17 @@ const PiCamera = require("pi-camera");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
+const connectDB = require("./db");
 const fs = require("fs");
 // const gpio = require("pi-gpio");
 require("dotenv").config();
-const cloudinary = require("cloudinary").v2;
 
+const cloudinary = require("cloudinary").v2;
+const Notification = require("./notificationModel");
 cloudinary.config({
   secure: true,
 });
-
+connectDB();
 // console.log(cloudinary.config());
 
 const myCamera = new PiCamera({
@@ -48,16 +50,37 @@ const myCamera = new PiCamera({
 var inFilename = "video.h264";
 var outFilename = "video.mp4";
 
-// ffmpeg(inFilename)
-//   .outputOptions("-c:v", "copy") // this will copy the data instead or reencode it
-//   .save(outFilename);
+ffmpeg(inFilename)
+  .outputOptions("-c:v", "copy") // this will copy the data instead or reencode it
+  .save(outFilename);
 
-let videoUrl;
-cloudinary.uploader
-  .upload("video.mp4", {
-    resource_type: "video",
-    public_id: "myfolder/mysubfolder/video",
-  })
-  .then((result) => {
-    videoUrl = result.url;
+let videoUrl = "";
+
+const uploadVidToCloudninary = async () => {
+  const vid = await cloudinary.uploader
+    .upload("video.mp4", {
+      resource_type: "video",
+      public_id: "myfolder/mysubfolder/video",
+    })
+    .then((result) => {
+      // console.log(result.url);
+      // videoUrl = result.url;
+      return result.url;
+    });
+
+  return vid;
+};
+
+async function getVidUrlandUploadToMongoDB() {
+  videoUrl = await uploadVidToCloudninary();
+  // console.log(videoUrl);
+  const data = await Notification.create({
+    videoUrl: videoUrl,
+    latitude: "6.465422",
+    longitude: "3.406448",
+    status: "UNREAD",
   });
+  console.log(data);
+}
+
+getVidUrlandUploadToMongoDB();
