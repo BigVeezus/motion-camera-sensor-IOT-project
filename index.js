@@ -24,28 +24,28 @@ const myCamera = new PiCamera({
   nopreview: true,
 });
 
-// gpio.open(11, "input", function (err) {
-//   // Open pin 11 for input
-//   gpio.read(11, function (err, value) {
-//     if (err) throw err;
-//     console.log(value); // The current state of the pin
-//     if (value == 1) {
-//       console.log("Motion detected");
-//       // myCamera
-//       //   .record()
-//       //   .then((result) => {
-//       //     // Your video was captured
-//       //     console.log("video captured");
-//       //   })
-//       //   .catch((error) => {
-//       //     // Handle your error
-//       //     console.log(error);
-//       //   });
+gpio.open(11, "input", function (err) {
+  // Open pin 11 for input
+  gpio.read(11, function (err, value) {
+    if (err) throw err;
+    console.log(value); // The current state of the pin
+    if (value == 1) {
+      console.log("Motion detected");
+      myCamera
+        .record()
+        .then((result) => {
+          // Your video was captured
+          console.log("video captured");
+        })
+        .catch((error) => {
+          // Handle your error
+          console.log(error);
+        });
 
-//       // send video to database
-//     }
-//   });
-// });
+      // send video to database
+    }
+  });
+});
 
 var inFilename = "video.h264";
 var outFilename = "video.mp4";
